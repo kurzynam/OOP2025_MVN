@@ -11,7 +11,7 @@ public class Main {
     public static void main(String[] args){
         ImageProcessor ip = new ImageProcessor();
         ip.loadImage("cat.jpg");
-        ip.increaseBrightnessMultiThread(-70);
-        ip.saveImage("brightened_cat_multithread.jpg");
+        ip.increaseBrightnessThreadPool(90);
+        ip.saveImage("brightened_cat_multithread_thread_pool.jpg");
     }
 }

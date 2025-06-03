@@ -6,6 +6,8 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class ImageProcessor {
 
@@ -81,6 +83,27 @@ public class ImageProcessor {
 
 
     public void increaseBrightnessThreadPool(int brightness){
-       // ExecutorService excuterService = Executors
+       ExecutorService excutorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+        int height = image.getHeight();
+        int width = image.getWidth();
+        for(int i = 0; i < height; i++){
+            final int finalI = i;
+            excutorService.submit(() -> {
+                    for (int j = 0; j < width; j++) {
+                        Color c = new Color(image.getRGB(finalI, j));
+                        int r = Math.clamp(c.getRed() + brightness, 0, 255);
+                        int g = Math.clamp(c.getGreen() + brightness, 0, 255);
+                        int b = Math.clamp(c.getBlue() + brightness, 0, 255);
+                        image.setRGB(finalI, j, new Color(r, g, b).getRGB());
+                    }
+                }
+            );
+        }
+        excutorService.shutdown();
+        try {
+            excutorService.awaitTermination(1, TimeUnit.MINUTES);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
